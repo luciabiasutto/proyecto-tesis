@@ -1,0 +1,156 @@
+.filtros-donacion {
+  background: transparent;
+  padding: 0.75rem 0;
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  position: relative;
+}
+
+.filtros-donacion h3 {
+  margin: 0 0 0.75rem 0;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.filtros-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.modal-body .filtros-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filtro-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.filtro-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-filtro);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.filtro-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-filtro);
+  color: white;
+}
+
+.filtro-btn:hover::before {
+  opacity: 0.1;
+}
+
+/* Cambiar el hover de Ropa para que no sea rojo - usar lila */
+.filtro-btn.filtro-ropa:hover {
+  border-color: #9b59b6 !important;
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
+  color: white !important;
+}
+
+.filtro-btn.filtro-ropa:hover::before {
+  opacity: 0 !important;
+}
+
+.filtro-btn.activo {
+  background: var(--color-filtro);
+  color: white;
+  border-color: var(--color-filtro);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.filtro-btn.activo::before {
+  opacity: 0;
+}
+
+.filtro-icono {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.filtro-nombre {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Animación para el botón activo */
+.filtro-btn.activo {
+  animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filtros-donacion {
+    padding: 1rem;
+  }
+  
+  .filtros-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  .filtro-btn {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .filtro-icono {
+    font-size: 1.2rem;
+  }
+  
+  .filtro-nombre {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .filtros-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

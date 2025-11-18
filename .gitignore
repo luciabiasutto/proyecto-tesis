@@ -1,0 +1,50 @@
+# Archivos compilados
+**/target/
+**/node_modules/
+**/.classpath
+**/.project
+**/.settings/
+**/.idea/
+**/*.iml
+
+# Logs
+**/*.log
+**/logs/
+
+# Archivos temporales
+**/.DS_Store
+**/Thumbs.db
+**/*~
+**/*.swp
+**/*.swo
+
+# Archivos de configuración local
+**/application-local.properties
+**/.env
+**/.env.local
+
+# Archivos de build
+**/dist/
+**/build/
+**/out/
+
+# Archivos de IDE
+**/.vscode/
+**/.eclipse/
+
+# Archivos de base de datos temporales
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# Archivos de backup
+**/*.bak
+**/*.backup
+
+# Archivos de test
+**/coverage/
+**/.nyc_output/
+
+# Archivos de documentación generados
+**/docs/generated/
+
