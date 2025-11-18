@@ -46,52 +46,40 @@ donaciones-app/
 
 - Java 17 o superior
 - Node.js 18 o superior
-- MySQL 8.0 o superior
+- MySQL 8.0 o superior (o XAMPP que incluye MySQL)
 - Maven 3.6 o superior
 
-## Configuración
+## Instalación y Ejecución
 
-### Base de Datos
+**📖 Para instrucciones detalladas paso a paso, consulta el archivo [INSTALACION.md](INSTALACION.md)**
 
-1. Crear la base de datos MySQL:
-```sql
-CREATE DATABASE donaciones_db;
-```
+### Resumen Rápido
 
-2. Configurar las credenciales en `backend/donaciones-backend/donaciones-backend/src/main/resources/application.properties`
+1. **Instalar requisitos previos** (Java, Node.js, MySQL, Maven)
 
-### Backend
+2. **Configurar la base de datos:**
+   ```sql
+   CREATE DATABASE donaciones_db;
+   ```
 
-1. Navegar a la carpeta del backend:
-```bash
-cd backend/donaciones-backend/donaciones-backend
-```
+3. **Ejecutar el backend:**
+   ```bash
+   cd backend/donaciones-backend/donaciones-backend
+   mvn spring-boot:run
+   ```
+   El backend estará disponible en `http://localhost:8080`
 
-2. Ejecutar la aplicación:
-```bash
-mvn spring-boot:run
-```
+4. **Ejecutar el frontend** (en una nueva terminal):
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   El frontend estará disponible en `http://localhost:5173`
 
-El backend estará disponible en `http://localhost:8080`
+5. **Abrir el navegador** en `http://localhost:5173`
 
-### Frontend
-
-1. Navegar a la carpeta del frontend:
-```bash
-cd frontend
-```
-
-2. Instalar dependencias:
-```bash
-npm install
-```
-
-3. Ejecutar en modo desarrollo:
-```bash
-npm run dev
-```
-
-El frontend estará disponible en `http://localhost:5173`
+**⚠️ IMPORTANTE:** Consulta [INSTALACION.md](INSTALACION.md) para instrucciones completas, solución de problemas y configuración detallada.
 
 ## Funcionalidades
 
