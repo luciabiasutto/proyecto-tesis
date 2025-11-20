@@ -51,8 +51,6 @@ donaciones-app/
 
 ## Instalación y Ejecución
 
-**📖 Para instrucciones detalladas paso a paso, consulta el archivo [INSTALACION.md](INSTALACION.md)**
-
 ### Resumen Rápido
 
 1. **Instalar requisitos previos** (Java, Node.js, MySQL, Maven)
@@ -78,8 +76,6 @@ donaciones-app/
    El frontend estará disponible en `http://localhost:5173`
 
 5. **Abrir el navegador** en `http://localhost:5173`
-
-**⚠️ IMPORTANTE:** Consulta [INSTALACION.md](INSTALACION.md) para instrucciones completas, solución de problemas y configuración detallada.
 
 ## Funcionalidades
 

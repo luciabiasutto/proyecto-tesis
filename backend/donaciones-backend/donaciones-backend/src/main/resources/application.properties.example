@@ -1,9 +1,9 @@
 # Configuración de la base de datos
-# NOTA: Esta contraseña es solo para desarrollo local. En producción, usa variables de entorno.
-# Nota: Si la base de datos no existe, conéctate primero a MySQL y créala con: CREATE DATABASE donaciones_db;
+# NOTA: Este es un archivo de ejemplo. Copia este archivo a application.properties
+# y configura tus propias credenciales de base de datos.
 spring.datasource.url=jdbc:mysql://localhost:3306/donaciones_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8
 spring.datasource.username=root
-spring.datasource.password=1234
+spring.datasource.password=TU_CONTRASEÑA_AQUI
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.hikari.connection-timeout=30000
 spring.datasource.hikari.maximum-pool-size=5
@@ -11,8 +11,6 @@ spring.datasource.hikari.minimum-idle=2
 spring.datasource.hikari.initialization-fail-timeout=-1
 
 # Configuración de JPA
-# Temporalmente en 'update' para crear la tabla organizaciones automáticamente
-# Cambiar de vuelta a 'none' después de crear la tabla
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
@@ -22,15 +20,12 @@ spring.jpa.properties.hibernate.format_sql=true
 server.port=8080
 server.servlet.context-path=/api
 
-# Configuración de CORS - manejado por CorsFilter
-
 # Logging
 logging.level.com.donaciones.donacionesbackend=DEBUG
 logging.level.org.springframework.web=DEBUG
 
 # Configuración de Email (SMTP)
 # Configura estos valores según tu proveedor de email
-# Ejemplo para Gmail:
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
 spring.mail.username=tu-email@gmail.com
@@ -44,3 +39,4 @@ spring.mail.properties.mail.smtp.writetimeout=5000
 
 # URL base de la aplicación (para enlaces en emails)
 app.base-url=http://localhost:5173
+
