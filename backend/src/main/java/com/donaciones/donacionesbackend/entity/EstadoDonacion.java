@@ -1,18 +1,17 @@
 package com.donaciones.donacionesbackend.entity;
 
+/**
+ * Estados del ciclo de una donación después de ser aceptada en el punto.
+ * Lo uso en reportes y filtros del panel administrativo.
+ */
 public enum EstadoDonacion {
-    RECIBIDA("Recibida"),
-    CLASIFICADA("Clasificada"),
-    DISTRIBUIDA("Distribuida"),
-    ENTREGADA("Entregada");
-    
-    private final String descripcion;
-    
-    EstadoDonacion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-    
-    public String getDescripcion() {
-        return descripcion;
-    }
+    RECIBIDA,
+
+    CLASIFICADA,
+
+    DISTRIBUIDA,
+
+    ENTREGADA,
+
+    CANCELADA
 }

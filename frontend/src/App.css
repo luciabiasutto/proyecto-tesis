@@ -883,8 +883,84 @@ a.leaflet-popup-close-button:focus {
   overflow-x: hidden;
 }
 
-/* Responsive para el layout con scroll */
+/* Responsive: mapa en columna (mapa arriba, filtros abajo) */
 @media (max-width: 768px) {
+  .mapa-container-mejorado,
+  .dashboard-content .mapa-container-mejorado {
+    flex-direction: column !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .dashboard-mapa-view .dashboard-content {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mapa-header-fixed,
+  .dashboard-content .mapa-header-fixed {
+    order: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    height: auto !important;
+    border-right: none !important;
+    border-top: 2px solid #e1e5e9 !important;
+    flex: 0 0 auto !important;
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .mapa-content-wrapper,
+  .dashboard-content .mapa-content-wrapper {
+    order: 1 !important;
+    flex: 0 0 auto !important;
+    height: 42vh !important;
+    max-height: 42vh !important;
+    min-height: 220px !important;
+    width: 100% !important;
+  }
+
+  .mapa-wrapper-mejorado,
+  .dashboard-content .mapa-wrapper-mejorado {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 42vh !important;
+  }
+
+  .mapa-header-content,
+  .dashboard-content .mapa-header-content {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .mapa-header-content h1,
+  .dashboard-content .mapa-header-content h1 {
+    font-size: 1rem !important;
+  }
+
+  .filtros-section-fixed,
+  .dashboard-content .filtros-section-fixed {
+    padding: 0.75rem 1rem 1rem !important;
+    overflow: visible !important;
+  }
+
+  .filtros-section-fixed .filtros-grid,
+  .dashboard-content .filtros-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+    gap: 0.5rem !important;
+  }
+
+  .filtros-section-fixed .filtro-btn,
+  .dashboard-content .filtro-btn {
+    flex: 1 1 calc(50% - 0.25rem) !important;
+    min-width: calc(50% - 0.25rem) !important;
+    max-width: 100% !important;
+    padding: 0.6rem 0.85rem !important;
+  }
+
   .mapa-header {
     padding: 0.75rem 1rem;
   }

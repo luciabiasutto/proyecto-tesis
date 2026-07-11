@@ -37,12 +37,13 @@ interface PuntoDonacion {
  * Permite al administrador ver todos los puntos (activos e inactivos),
  * crear nuevos, editar y desactivar puntos existentes
  */
+// Vista del administrador: crear, editar, activar y borrar puntos de donación
 const GestionPuntosDonacion: React.FC = () => {
-  const [puntos, setPuntos] = useState<PuntoDonacion[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [puntos, setPuntos] = useState<PuntoDonacion[]>([]); // lista de puntos
+  const [loading, setLoading] = useState(true); // true mientras carga
+  const [error, setError] = useState<string | null>(null); // mensaje de error
   const [showForm, setShowForm] = useState(false); // Controla si se muestra el formulario en modal
-  const [editingPunto, setEditingPunto] = useState<PuntoDonacion | null>(null); // Punto que se está editando
+  const [editingPunto, setEditingPunto] = useState<PuntoDonacion | null>(null); // Punto que se está editando (null = crear nuevo)
 
   // Tipos de donación disponibles en el sistema
   const tiposDonacionDisponibles = ['ropa', 'vidrio', 'plastico', 'papel', 'organicos', 'otros'];
@@ -69,6 +70,7 @@ const GestionPuntosDonacion: React.FC = () => {
    * Uso el parámetro "todos=true" para obtener también los puntos desactivados
    * Normalizo el campo "activo" porque puede venir en diferentes formatos desde el backend
    */
+  // Trae los puntos del backend (incluye activos e inactivos)
   const fetchPuntos = async () => {
     try {
       const response = await api.get('/puntos-donacion', {
@@ -111,7 +113,7 @@ const GestionPuntosDonacion: React.FC = () => {
    * Valida los datos antes de enviarlos al servidor
    */
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // evito recargar la página
     
     // Validación: debe haber al menos un tipo de donación seleccionado
     if (formData.tiposDonacion.length === 0) {
@@ -120,17 +122,19 @@ const GestionPuntosDonacion: React.FC = () => {
     }
     
     try {
+      // Preparo los datos en el formato que espera el backend
       const puntoData = {
         ...formData,
-        tipoDonacion: JSON.stringify(formData.tiposDonacion), // Convertir array a JSON string
-        latitud: parseFloat(formData.latitud),
+        tipoDonacion: JSON.stringify(formData.tiposDonacion), // el array de tipos lo mando como texto JSON
+        latitud: parseFloat(formData.latitud), // convierto texto a número
         longitud: parseFloat(formData.longitud),
         activo: true
       };
-      // Eliminar tiposDonacion del objeto que se envía
+      // Saco el campo auxiliar que el backend no usa
       delete (puntoData as any).tiposDonacion;
 
       let response;
+      // Si estoy editando, uso PUT; si es nuevo, uso POST
       if (editingPunto) {
         response = await api.put(`/puntos-donacion/${editingPunto.id}`, puntoData);
       } else {
@@ -138,8 +142,8 @@ const GestionPuntosDonacion: React.FC = () => {
       }
 
       if (response.status === 200) {
-        fetchPuntos();
-        setShowForm(false);
+        fetchPuntos(); // recargo la lista actualizada
+        setShowForm(false); // cierro el formulario
         setEditingPunto(null);
         setFormData({
           nombre: '',
@@ -164,8 +168,9 @@ const GestionPuntosDonacion: React.FC = () => {
     }
   };
 
+  // Carga los datos de un punto en el formulario para editarlo
   const handleEdit = (punto: PuntoDonacion) => {
-    setEditingPunto(punto);
+    setEditingPunto(punto); // marco que estoy en modo edición
     
     // Parsear tipoDonacion (puede ser JSON string o string simple)
     let tiposDonacion: string[] = [];

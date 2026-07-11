@@ -1,6 +1,6 @@
 # Sistema de Gestión de Donaciones
 
-Sistema web para la gestión de puntos de donación desarrollado como proyecto de tesis.
+Sistema web para la gestión de puntos de donación desarrollado como proyecto de tesis
 
 ## Descripción
 
@@ -8,14 +8,14 @@ Sistema que permite gestionar puntos de donación, facilitando la conexión entr
 
 ## Tecnologías Utilizadas
 
-### Backend
+# Backend
 - Java 17
 - Spring Boot 3.x
 - Spring Data JPA
 - MySQL
 - Maven
 
-### Frontend
+# Frontend
 - React 18
 - TypeScript
 - Vite
@@ -27,13 +27,11 @@ Sistema que permite gestionar puntos de donación, facilitando la conexión entr
 ```
 donaciones-app/
 ├── backend/              # Backend Spring Boot
-│   └── donaciones-backend/
-│       └── donaciones-backend/
-│           └── src/
-│               └── main/
-│                   ├── java/    # Código fuente Java
-│                   └── resources/
-│                       └── application.properties
+│   └── src/
+│       └── main/
+│           ├── java/    # Código fuente Java
+│           └── resources/
+│               └── application.properties
 │
 └── frontend/           # Frontend React
     └── src/
@@ -53,21 +51,21 @@ donaciones-app/
 
 ### Resumen Rápido
 
-1. **Instalar requisitos previos** (Java, Node.js, MySQL, Maven)
+1. **Instalar requisitos previos** 
 
-2. **Configurar la base de datos:**
+2. **Configurar la base de datos**
    ```sql
    CREATE DATABASE donaciones_db;
    ```
 
-3. **Ejecutar el backend:**
+3. **Ejecutar el backend**
    ```bash
-   cd backend/donaciones-backend/donaciones-backend
-   mvn spring-boot:run
+   cd backend
+   .\mvnw.cmd spring-boot:run
    ```
    El backend estará disponible en `http://localhost:8080`
 
-4. **Ejecutar el frontend** (en una nueva terminal):
+4. **Ejecutar el frontend**
    ```bash
    cd frontend
    npm install
@@ -96,5 +94,4 @@ donaciones-app/
 
 ## Licencia
 
-Este proyecto fue desarrollado como parte de una tesis de ingeniería.
-
+Este proyecto fue desarrollado como parte de una tesis de ingeniería

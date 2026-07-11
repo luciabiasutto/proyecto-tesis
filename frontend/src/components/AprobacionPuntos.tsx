@@ -45,10 +45,12 @@ const AprobacionPuntos: React.FC = () => {
     motivo: ''
   });
 
+  // Al montar, traigo los puntos que están esperando aprobación
   useEffect(() => {
     fetchPuntosPendientes();
   }, []);
 
+  // Pide al backend los puntos con estado pendiente
   const fetchPuntosPendientes = async () => {
     try {
       const response = await api.get('/puntos-donacion/pendientes');
@@ -60,21 +62,23 @@ const AprobacionPuntos: React.FC = () => {
     }
   };
 
+  // Aprueba un punto: se publica en el mapa
   const handleAprobar = async (id: number) => {
     if (!window.confirm('¿Estás seguro de que quieres aprobar este punto? Se publicará en el mapa.')) {
-      return;
+      return; // si el admin cancela, no hago nada
     }
 
     try {
-      await api.post(`/puntos-donacion/${id}/aprobar`);
+      await api.post(`/puntos-donacion/${id}/aprobar`); // POST de aprobación
       setError(null);
-      fetchPuntosPendientes();
+      fetchPuntosPendientes(); // recargo la lista (el aprobado ya no aparece)
     } catch (err: any) {
       console.error('Error:', err);
       setError('Error al aprobar el punto');
     }
   };
 
+  // Rechaza un punto: requiere escribir un motivo
   const handleRechazar = async () => {
     if (!rechazoModal.puntoId || !rechazoModal.motivo.trim()) {
       setError('Debes ingresar un motivo de rechazo');
@@ -82,12 +86,13 @@ const AprobacionPuntos: React.FC = () => {
     }
 
     try {
+      // Envío el rechazo con el motivo al backend
       await api.post(`/puntos-donacion/${rechazoModal.puntoId}/rechazar`, {
         motivoRechazo: rechazoModal.motivo
       });
       setError(null);
-      setRechazoModal({ show: false, puntoId: null, motivo: '' });
-      fetchPuntosPendientes();
+      setRechazoModal({ show: false, puntoId: null, motivo: '' }); // cierro el modal
+      fetchPuntosPendientes(); // recargo la lista
     } catch (err: any) {
       console.error('Error:', err);
       setError('Error al rechazar el punto');
@@ -109,6 +114,7 @@ const AprobacionPuntos: React.FC = () => {
 
       {error && <div className="error-message">{error}</div>}
 
+      {/* Si no hay pendientes muestro un cartel; si hay, listo las tarjetas */}
       {puntos.length === 0 ? (
         <div className="empty-state">
           <p>🎉 ¡No hay puntos pendientes de aprobación!</p>
@@ -116,6 +122,7 @@ const AprobacionPuntos: React.FC = () => {
         </div>
       ) : (
         <div className="puntos-list">
+          {/* Una tarjeta por cada punto pendiente */}
           {puntos.map((punto) => (
             <div key={punto.id} className="punto-card">
               <div className="punto-header">

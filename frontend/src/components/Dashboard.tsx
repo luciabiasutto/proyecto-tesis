@@ -11,33 +11,35 @@ interface DashboardProps {
   rol: string;
 }
 
+// Distribuidor de vistas: según el rol muestra unas pestañas u otras
 const Dashboard: React.FC<DashboardProps> = ({ usuario, rol }) => {
-  const [activeTab, setActiveTab] = useState('mapa');
+  const [activeTab, setActiveTab] = useState('mapa'); // pestaña seleccionada (por defecto el mapa)
 
-  // Si es donante, mostrar la página de inicio
+  // Normalizo el rol (mayúsculas y sin espacios) para comparar sin errores
   const rolNormalizado = rol?.toUpperCase().trim();
   console.log('Dashboard - Rol recibido:', rol, 'Rol normalizado:', rolNormalizado);
   
+  // El donante tiene su propia pantalla de inicio, no las pestañas de gestión
   if (rolNormalizado === 'DONANTE') {
     console.log('Mostrando InicioDonante para donante');
     return <InicioDonante usuario={usuario} />;
   }
 
-  // Definir tabs según el rol del usuario
+  // Devuelve las pestañas disponibles según el rol del usuario
   const getTabsByRole = () => {
     const baseTabs = [
-      { id: 'mapa', label: 'Mapa de Donaciones', icon: '🗺️' }
+      { id: 'mapa', label: 'Mapa de Donaciones', icon: '🗺️' } // el mapa lo ven todos
     ];
 
     switch (rol) {
-      case 'ADMINISTRADOR':
+      case 'ADMINISTRADOR': // el admin gestiona y aprueba puntos
         return [
           ...baseTabs,
           { id: 'puntos', label: 'Gestionar Puntos', icon: '📍' },
           { id: 'aprobacion', label: 'Aprobar Puntos', icon: '✅' }
         ];
 
-      case 'ORGANIZACION':
+      case 'ORGANIZACION': // la organización solo gestiona sus propios puntos
         return [
           ...baseTabs,
           { id: 'mis-puntos', label: 'Mis Puntos', icon: '📍' }
@@ -48,8 +50,9 @@ const Dashboard: React.FC<DashboardProps> = ({ usuario, rol }) => {
     }
   };
 
-  const tabs = getTabsByRole();
+  const tabs = getTabsByRole(); // calculo las pestañas una vez
 
+  // Devuelve el componente que corresponde a la pestaña activa
   const renderContent = () => {
     switch (activeTab) {
       case 'mapa':
@@ -65,7 +68,7 @@ const Dashboard: React.FC<DashboardProps> = ({ usuario, rol }) => {
     }
   };
 
-  // Si estamos mostrando el mapa, ocultar headers para que se vea igual que en donante
+  // Si la pestaña activa es el mapa, oculto los títulos para que se vea a pantalla completa
   const isMapaView = activeTab === 'mapa';
 
   return (
@@ -77,12 +80,13 @@ const Dashboard: React.FC<DashboardProps> = ({ usuario, rol }) => {
             <p>Encuentra y contacta puntos de donación cerca de ti</p>
           </header>
           
+          {/* Recorro las pestañas y creo un botón por cada una */}
           <nav className="dashboard-nav">
             {tabs.map(tab => (
               <button
-                key={tab.id}
-                className={`nav-button ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
+                key={tab.id} // key único para que React identifique cada botón
+                className={`nav-button ${activeTab === tab.id ? 'active' : ''}`} // resalta la activa
+                onClick={() => setActiveTab(tab.id)} // al hacer clic cambio de pestaña
               >
                 <span className="nav-icon">{tab.icon}</span>
                 <span className="nav-label">{tab.label}</span>
@@ -107,6 +111,7 @@ const Dashboard: React.FC<DashboardProps> = ({ usuario, rol }) => {
         </nav>
       )}
       
+      {/* Zona principal: muestra el componente de la pestaña activa */}
       <main className="dashboard-content">
         {renderContent()}
       </main>

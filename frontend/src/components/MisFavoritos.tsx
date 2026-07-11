@@ -37,22 +37,24 @@ const MisFavoritos: React.FC<MisFavoritosProps> = ({ usuario }) => {
   const [nuevaEtiqueta, setNuevaEtiqueta] = useState('');
   const [filtroEtiqueta, setFiltroEtiqueta] = useState<string>('todos');
 
+  // Cargo los favoritos cada vez que tengo un usuario válido
   useEffect(() => {
     if (usuario?.id) {
       fetchFavoritos();
     }
-  }, [usuario]);
+  }, [usuario]); // se re-ejecuta si cambia el usuario
 
+  // Trae los favoritos del usuario y completa los datos de cada punto
   const fetchFavoritos = async () => {
     try {
       const response = await api.get(`/favoritos/usuario/${usuario.id}`);
-      // Si el backend no incluye el puntoDonacion completo, necesitamos cargarlo
+      // Si un favorito no trae el punto completo, lo pido aparte (Promise.all = en paralelo)
       const favoritosConPuntos = await Promise.all(
         response.data.map(async (favorito: Favorito) => {
           if (!favorito.puntoDonacion && favorito.puntoDonacionId) {
             try {
               const puntoResponse = await api.get(`/puntos-donacion/${favorito.puntoDonacionId}`);
-              return { ...favorito, puntoDonacion: puntoResponse.data };
+              return { ...favorito, puntoDonacion: puntoResponse.data }; // le agrego el punto
             } catch {
               return favorito;
             }
@@ -65,8 +67,7 @@ const MisFavoritos: React.FC<MisFavoritosProps> = ({ usuario }) => {
     } catch (err: any) {
       console.error('Error:', err);
       if (err.response?.status === 404) {
-        // No hay favoritos aún
-        setFavoritos([]);
+        setFavoritos([]); // 404 = todavía no tiene favoritos (no es un error real)
       } else {
         setError('Error al cargar tus favoritos');
       }
@@ -74,11 +75,12 @@ const MisFavoritos: React.FC<MisFavoritosProps> = ({ usuario }) => {
     }
   };
 
+  // Elimina un favorito (pide confirmación antes)
   const handleEliminarFavorito = async (favoritoId: number) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este favorito?')) {
       try {
-        await api.delete(`/favoritos/${favoritoId}`);
-        fetchFavoritos();
+        await api.delete(`/favoritos/${favoritoId}`); // DELETE en la API
+        fetchFavoritos(); // recargo la lista
         setError(null);
       } catch (err: any) {
         console.error('Error:', err);
@@ -87,10 +89,11 @@ const MisFavoritos: React.FC<MisFavoritosProps> = ({ usuario }) => {
     }
   };
 
+  // Guarda una etiqueta personalizada para un favorito (ej. "cerca de casa")
   const handleGuardarEtiqueta = async (favoritoId: number) => {
     try {
       await api.put(`/favoritos/${favoritoId}/etiqueta`, { etiqueta: nuevaEtiqueta });
-      setEditingEtiqueta(null);
+      setEditingEtiqueta(null); // salgo del modo edición
       setNuevaEtiqueta('');
       fetchFavoritos();
       setError(null);
@@ -100,6 +103,7 @@ const MisFavoritos: React.FC<MisFavoritosProps> = ({ usuario }) => {
     }
   };
 
+  // Agenda una fecha de visita para un favorito
   const handleAgendar = async (favoritoId: number, fecha: string) => {
     try {
       await api.put(`/favoritos/${favoritoId}/agendar`, { fechaAgendada: fecha });

@@ -2,6 +2,8 @@ package com.donaciones.donacionesbackend.repository;
 
 import com.donaciones.donacionesbackend.entity.PuntoDonacion;
 import com.donaciones.donacionesbackend.entity.TipoDonacion;
+import com.donaciones.donacionesbackend.entity.EstadoPunto;
+import com.donaciones.donacionesbackend.entity.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,6 +11,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Consultas del mapa y del panel de puntos de donación.
+ * Incluye búsqueda por proximidad con fórmula de Haversine.
+ */
 @Repository
 public interface PuntoDonacionRepository extends JpaRepository<PuntoDonacion, Long> {
     
@@ -18,7 +24,7 @@ public interface PuntoDonacionRepository extends JpaRepository<PuntoDonacion, Lo
     // Buscar por tipo de donación
     List<PuntoDonacion> findByTipoDonacionAndActivoTrue(TipoDonacion tipoDonacion);
     
-    // Buscar puntos cercanos (usando coordenadas)
+    /** Puntos dentro de un radio en km desde la ubicación del usuario. */
     @Query("SELECT p FROM PuntoDonacion p WHERE p.activo = true AND " +
            "6371 * acos(cos(radians(:lat)) * cos(radians(p.latitud)) * " +
            "cos(radians(p.longitud) - radians(:lng)) + sin(radians(:lat)) * " +
@@ -29,4 +35,13 @@ public interface PuntoDonacionRepository extends JpaRepository<PuntoDonacion, Lo
     
     // Buscar por nombre (búsqueda parcial)
     List<PuntoDonacion> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre);
+    
+    // Buscar por estado
+    List<PuntoDonacion> findByEstado(EstadoPunto estado);
+    
+    // Buscar por estado y activo
+    List<PuntoDonacion> findByActivoTrueAndEstado(EstadoPunto estado);
+    
+    /** Puntos creados por una organización o admin concreto. */
+    List<PuntoDonacion> findByUsuarioCreadorIdAndTipoCreador(Long usuarioCreadorId, Rol tipoCreador);
 }

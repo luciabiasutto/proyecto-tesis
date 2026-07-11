@@ -33,13 +33,14 @@ interface PuntoDonacion {
   motivoRechazo?: string;
 }
 
+// Vista de la organización: gestiona SOLO sus propios puntos de donación
 const GestionMisPuntos: React.FC = () => {
-  const [puntos, setPuntos] = useState<PuntoDonacion[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [editingPunto, setEditingPunto] = useState<PuntoDonacion | null>(null);
-  const [usuario, setUsuario] = useState<any>(null);
+  const [puntos, setPuntos] = useState<PuntoDonacion[]>([]); // puntos de esta organización
+  const [loading, setLoading] = useState(true); // true mientras carga
+  const [error, setError] = useState<string | null>(null); // mensaje de error
+  const [showForm, setShowForm] = useState(false); // muestra/oculta el formulario
+  const [editingPunto, setEditingPunto] = useState<PuntoDonacion | null>(null); // punto en edición
+  const [usuario, setUsuario] = useState<any>(null); // la organización logueada
 
   const tiposDonacionDisponibles = ['ropa', 'vidrio', 'plastico', 'papel', 'organicos', 'otros'];
   
@@ -55,15 +56,17 @@ const GestionMisPuntos: React.FC = () => {
     email: ''
   });
 
+  // Al montar: leo la organización logueada y traigo sus puntos
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem('usuario');
     if (usuarioGuardado) {
       const usuarioData = JSON.parse(usuarioGuardado);
       setUsuario(usuarioData);
-      fetchPuntos(usuarioData.id);
+      fetchPuntos(usuarioData.id); // traigo los puntos de esta organización
     }
   }, []);
 
+  // Trae del backend solo los puntos creados por esta organización
   const fetchPuntos = async (organizacionId: number) => {
     try {
       const response = await api.get(`/puntos-donacion/organizacion/${organizacionId}`);
@@ -75,6 +78,7 @@ const GestionMisPuntos: React.FC = () => {
     }
   };
 
+  // Crea o edita un punto de la organización (queda pendiente de aprobación del admin)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -85,28 +89,29 @@ const GestionMisPuntos: React.FC = () => {
     }
     
     try {
+      // Armo el objeto con los datos del punto + quién lo crea
       const puntoData = {
         ...formData,
-        tipoDonacion: JSON.stringify(formData.tiposDonacion), // Convertir array a JSON string
+        tipoDonacion: JSON.stringify(formData.tiposDonacion), // array de tipos como texto JSON
         latitud: parseFloat(formData.latitud),
         longitud: parseFloat(formData.longitud),
         activo: true,
-        usuarioCreadorId: usuario?.id,
+        usuarioCreadorId: usuario?.id, // ID de la organización que lo crea
         tipoCreador: 'ORGANIZACION'
       };
-      // Eliminar tiposDonacion del objeto que se envía
+      // Saco el campo auxiliar que el backend no usa
       delete (puntoData as any).tiposDonacion;
 
       let response;
       if (editingPunto) {
-        // Al editar, incluir el usuarioCreadorId para validación de permisos
+        // Al editar, incluyo el creador para que el backend valide permisos
         const puntoDataEdit = {
           ...puntoData,
           usuarioCreadorId: usuario?.id
         };
-        response = await api.put(`/puntos-donacion/${editingPunto.id}`, puntoDataEdit);
+        response = await api.put(`/puntos-donacion/${editingPunto.id}`, puntoDataEdit); // PUT = editar
       } else {
-        response = await api.post('/puntos-donacion', puntoData);
+        response = await api.post('/puntos-donacion', puntoData); // POST = crear
       }
 
       if (response.status === 200 || response.status === 201) {

@@ -5,32 +5,34 @@ import './LoginUnificado.css';
 // Cambia 'logo.png' por el nombre de tu archivo (puede ser .png, .jpg, .svg, etc.)
 import logo from '../assets/logo.png';
 
-// Componente para el formulario de recuperación de contraseña
+// Formulario chico para pedir el enlace de recuperación de contraseña
 const RecuperarPasswordForm: React.FC<{ onBack: () => void; onSuccess: () => void }> = ({ onBack, onSuccess }) => {
-  const [email, setEmail] = useState('');
-  const [rol, setRol] = useState('DONANTE');
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState(''); // email al que enviar el enlace
+  const [rol, setRol] = useState('DONANTE'); // rol del usuario que recupera
+  const [error, setError] = useState<string | null>(null); // mensaje de error
+  const [success, setSuccess] = useState<string | null>(null); // mensaje de éxito
+  const [loading, setLoading] = useState(false); // true mientras se envía
 
+  // Se ejecuta al enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // evito que la página se recargue
     setError(null);
     setSuccess(null);
     setLoading(true);
 
     try {
+      // Pido al backend que envíe el email de recuperación
       const response = await api.post('/auth/password/solicitar', { email, rol });
       if (response.data.success) {
         setSuccess('Si el email existe, se ha enviado un enlace de recuperación a tu correo.');
-        setTimeout(() => onSuccess(), 2000);
+        setTimeout(() => onSuccess(), 2000); // vuelvo al login después de 2 segundos
       } else {
         setError(response.data.message || 'Error al solicitar recuperación');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al solicitar recuperación');
     } finally {
-      setLoading(false);
+      setLoading(false); // pase lo que pase, saco el estado de carga
     }
   };
 
@@ -72,9 +74,11 @@ interface LoginUnificadoProps {
   onLogin: (usuario: any, rol: string) => void;
 }
 
+// Pantalla principal de login y registro para los 3 roles
 const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [showRecuperarPassword, setShowRecuperarPassword] = useState(false);
+  const [isLogin, setIsLogin] = useState(true); // true = modo login, false = modo registro
+  const [showRecuperarPassword, setShowRecuperarPassword] = useState(false); // muestra el form de recuperar
+  // Un solo objeto con todos los campos del formulario
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -82,12 +86,13 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
     password: '',
     documento: '',
     rol: 'DONANTE',
-    codigoSeguridad: '', // Código de seguridad para administradores
+    codigoSeguridad: '', // Código extra que se pide a admin y organización
   });
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showCodigoSeguridad, setShowCodigoSeguridad] = useState(false);
+  const [error, setError] = useState<string | null>(null); // mensaje de error
+  const [loading, setLoading] = useState(false); // true mientras se procesa
+  const [showPassword, setShowPassword] = useState(false); // mostrar/ocultar contraseña
+  const [showCodigoSeguridad, setShowCodigoSeguridad] = useState(false); // mostrar/ocultar código
+  // Reglas de la contraseña que se validan en vivo al registrarse
   const [passwordStrength, setPasswordStrength] = useState({
     length: false,
     uppercase: false,
@@ -95,19 +100,21 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
     number: false
   });
 
+  // Actualiza el estado cada vez que el usuario escribe en un campo
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target; // name = qué campo, value = lo que escribió
     setFormData(prev => ({
-      ...prev,
-      [name]: value
+      ...prev, // mantengo el resto de los campos
+      [name]: value // actualizo solo el que cambió
     }));
     
-    // Validar contraseña en tiempo real si es el campo de contraseña
+    // Si está escribiendo la contraseña en modo registro, la valido en vivo
     if (name === 'password' && !isLogin) {
       validatePassword(value);
     }
   };
   
+  // Chequea que la contraseña cumpla las 4 reglas (largo, mayús, minús, número)
   const validatePassword = (password: string) => {
     setPasswordStrength({
       length: password.length >= 8,
@@ -117,14 +124,15 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
     });
   };
 
+  // Se ejecuta al enviar el formulario (sirve tanto para login como para registro)
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // evito que se recargue la página
     setError(null);
     
-    // Validación básica del formulario HTML5
+    // Uso la validación nativa del navegador (campos requeridos, email válido, etc.)
     const form = e.target as HTMLFormElement;
     if (!form.checkValidity()) {
-      form.reportValidity();
+      form.reportValidity(); // muestra los avisos del navegador
       return;
     }
     
@@ -132,7 +140,7 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
 
     try {
       if (isLogin) {
-        // Login
+        // --- MODO LOGIN ---
         const response = await api.post('/auth/login', {
           email: formData.email,
           password: formData.password,
@@ -140,6 +148,7 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
         });
 
         if (response.data.success) {
+          // Guardo la sesión y aviso a App que el login fue exitoso
           localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
           localStorage.setItem('rol', response.data.rol);
           onLogin(response.data.usuario, response.data.rol);
@@ -147,18 +156,19 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
           setError('Credenciales incorrectas');
         }
       } else {
-        // Registro
-        // Validar código de seguridad si es administrador u organización
+        // --- MODO REGISTRO ---
+        // Si el rol es admin u organización, exijo el código de seguridad
         if (formData.rol === 'ADMINISTRADOR' || formData.rol === 'ORGANIZACION') {
           if (!formData.codigoSeguridad || formData.codigoSeguridad.trim() === '') {
             setError('El código de seguridad es requerido');
             setLoading(false);
             return;
           }
-          // Códigos de seguridad
-          const codigoAdmin = 'ADMIN2024'; // Código para administradores
-          const codigoOrg = 'ORG2024'; // Código para organizaciones
+          // Códigos secretos definidos en el frontend
+          const codigoAdmin = 'ADMIN2024'; // código para administradores
+          const codigoOrg = 'ORG2024'; // código para organizaciones
           
+          // Si el código no coincide, freno el registro
           if (formData.rol === 'ADMINISTRADOR' && formData.codigoSeguridad !== codigoAdmin) {
             setError('Código de seguridad incorrecto para administrador');
             setLoading(false);
@@ -232,9 +242,11 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
         };
         
         
+        // Envío los datos al backend para crear el usuario
         const response = await api.post('/auth/register', finalData);
 
         if (response.data.success) {
+          // Registro OK: guardo la sesión y entro directo
           localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
           localStorage.setItem('rol', response.data.rol);
           onLogin(response.data.usuario, response.data.rol);
@@ -469,6 +481,7 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
           
           {renderFieldsByRole()}
           
+          {/* El campo de código solo aparece al registrar admin u organización */}
           {!isLogin && (formData.rol === 'ADMINISTRADOR' || formData.rol === 'ORGANIZACION') && (
             <div className="form-group">
               <label>Código de Seguridad *</label>
@@ -506,13 +519,14 @@ const LoginUnificado: React.FC<LoginUnificadoProps> = ({ onLogin }) => {
           </button>
         </form>
 
+        {/* Enlace para alternar entre iniciar sesión y registrarse */}
         <div className="toggle-form">
           <p>
             {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
             <button
               type="button"
               onClick={() => {
-                setIsLogin(!isLogin);
+                setIsLogin(!isLogin); // cambio entre login y registro
                 setError(null);
                 setShowPassword(false);
                 setShowCodigoSeguridad(false);

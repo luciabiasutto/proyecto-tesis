@@ -44,7 +44,7 @@ Instalar estas herramientas antes de comenzar:
 
 1. Abrir una terminal y navegar a la carpeta del backend:
    ```bash
-   cd backend/donaciones-backend/donaciones-backend
+   cd backend
    ```
 
 2. Verificar el archivo `application.properties`:

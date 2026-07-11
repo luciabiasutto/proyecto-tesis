@@ -11,7 +11,7 @@ interface Favorito {
   etiqueta?: string;
 }
 
-// Configurar iconos de Leaflet
+// Arreglo estándar de Leaflet: le indico de dónde sacar las imágenes de los marcadores
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -19,23 +19,22 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Función para crear iconos personalizados por tipo de donación
-// Función helper para parsear tipos de donación (puede ser JSON array o string simple)
+// Convierte el campo tipoDonacion en un array (puede venir como JSON ["ropa","papel"] o como texto simple)
 const parsearTiposDonacion = (tipoDonacion: string): string[] => {
   try {
-    const tipos = JSON.parse(tipoDonacion);
+    const tipos = JSON.parse(tipoDonacion); // intento leerlo como JSON
     if (Array.isArray(tipos)) {
-      return tipos;
+      return tipos; // si era un array, lo devuelvo tal cual
     }
     return [tipoDonacion];
   } catch {
-    return [tipoDonacion];
+    return [tipoDonacion]; // si no es JSON, lo devuelvo como array de un solo elemento
   }
 };
 
-// Función helper para formatear horarios (eliminar segundos)
+// Formatea la hora: de "09:00:00" a "09:00 hs" (le quita los segundos)
 const formatearHorario = (horario: string | null | undefined): string => {
-  if (!horario) return '';
+  if (!horario) return ''; // si no hay horario, devuelvo vacío
   // Si tiene formato HH:mm:ss, eliminar los segundos
   if (horario.includes(':') && horario.split(':').length === 3) {
     return horario.substring(0, 5) + ' hs';
@@ -47,8 +46,9 @@ const formatearHorario = (horario: string | null | undefined): string => {
   return horario;
 };
 
+// Crea un marcador de color distinto según el tipo de donación
 const crearIconoPersonalizado = (tipoDonacion: string) => {
-  // Obtener el primer tipo para el color del ícono
+  // Uso el primer tipo para decidir el color del pin
   const tipos = parsearTiposDonacion(tipoDonacion);
   const primerTipo = tipos[0] || tipoDonacion;
   const colores = {
@@ -103,63 +103,66 @@ interface PuntoDonacion {
   fechaCreacion: string;
 }
 
+// Componente del mapa interactivo con todos los puntos de donación
 const MapaDonaciones: React.FC = () => {
-  const [puntosDonacion, setPuntosDonacion] = useState<PuntoDonacion[]>([]);
-  const [puntosFiltrados, setPuntosFiltrados] = useState<PuntoDonacion[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filtroActivo, setFiltroActivo] = useState<string>('todos');
+  const [puntosDonacion, setPuntosDonacion] = useState<PuntoDonacion[]>([]); // todos los puntos traídos del backend
+  const [puntosFiltrados, setPuntosFiltrados] = useState<PuntoDonacion[]>([]); // los que se muestran según el filtro
+  const [loading, setLoading] = useState(true); // true mientras cargan los datos
+  const [error, setError] = useState<string | null>(null); // guarda el mensaje si algo falla
+  const [filtroActivo, setFiltroActivo] = useState<string>('todos'); // filtro seleccionado
   const [favoritos, setFavoritos] = useState<number[]>([]); // IDs de puntos favoritos
-  const [usuario, setUsuario] = useState<any>(null);
+  const [usuario, setUsuario] = useState<any>(null); // usuario logueado
 
+  // Pide al backend la lista de puntos de donación
   const fetchPuntosDonacion = async () => {
     try {
-      const response = await api.get('/puntos-donacion');
-      setPuntosDonacion(response.data || []);
-      setPuntosFiltrados(response.data || []);
+      const response = await api.get('/puntos-donacion'); // GET a la API
+      setPuntosDonacion(response.data || []); // guardo la lista completa
+      setPuntosFiltrados(response.data || []); // al inicio muestro todos
       setLoading(false);
       setError(null);
     } catch (err: any) {
       console.error('Error al cargar puntos:', err);
-      setError('Error al cargar los puntos de donación');
+      setError('Error al cargar los puntos de donación'); // guardo el error para mostrarlo
       setLoading(false);
     }
   };
 
+  // Al montar el mapa: cargo usuario, sus favoritos y los puntos
   useEffect(() => {
-    // Obtener usuario del localStorage
+    // Leo el usuario guardado en el navegador
     const usuarioGuardado = localStorage.getItem('usuario');
     if (usuarioGuardado) {
       const usuarioData = JSON.parse(usuarioGuardado);
       setUsuario(usuarioData);
       
-      // Solo cargar favoritos si es donante
+      // Los favoritos solo aplican al donante
       if (usuarioData.rol === 'DONANTE' || localStorage.getItem('rol') === 'DONANTE') {
         fetchFavoritos(usuarioData.id);
       }
     }
 
-    // Cargar puntos inicialmente
+    // Traigo los puntos apenas se abre el mapa
     fetchPuntosDonacion();
 
-    // Escuchar evento personalizado cuando se elimina un punto
+    // Si otra pantalla borra un punto, dispara este evento y recargo el mapa
     const handlePuntoEliminado = () => {
-      // Recargar los puntos del mapa cuando se elimina uno
       fetchPuntosDonacion();
     };
 
-    window.addEventListener('puntoEliminado', handlePuntoEliminado);
+    window.addEventListener('puntoEliminado', handlePuntoEliminado); // me suscribo al evento
 
-    // Limpiar el listener cuando el componente se desmonte
+    // Al desmontar el componente, quito el listener para no dejar basura
     return () => {
       window.removeEventListener('puntoEliminado', handlePuntoEliminado);
     };
-  }, []);
+  }, []); // [] = solo una vez al montar
 
+  // Trae los favoritos del donante y guarda solo los IDs de los puntos
   const fetchFavoritos = async (usuarioId: number) => {
     try {
       const response = await api.get(`/favoritos/usuario/${usuarioId}`);
-      const idsFavoritos = response.data.map((f: Favorito) => f.puntoDonacionId);
+      const idsFavoritos = response.data.map((f: Favorito) => f.puntoDonacionId); // extraigo los IDs
       setFavoritos(idsFavoritos);
     } catch (err: any) {
       if (err.response?.status !== 404) {
@@ -168,30 +171,31 @@ const MapaDonaciones: React.FC = () => {
     }
   };
 
+  // Agrega o quita un punto de favoritos (según si ya estaba o no)
   const handleToggleFavorito = async (puntoId: number) => {
     if (!usuario?.id) {
-      alert('Debes estar logueado para agregar favoritos');
+      alert('Debes estar logueado para agregar favoritos'); // sin sesión no se puede
       return;
     }
 
-    const esFavorito = favoritos.includes(puntoId);
+    const esFavorito = favoritos.includes(puntoId); // ¿ya estaba en favoritos?
 
     try {
       if (esFavorito) {
-        // Eliminar favorito
+        // Si ya era favorito, lo busco y lo borro
         const favorito = await api.get(`/favoritos/usuario/${usuario.id}`);
         const favoritoEncontrado = favorito.data.find((f: Favorito) => f.puntoDonacionId === puntoId);
         if (favoritoEncontrado) {
-          await api.delete(`/favoritos/${favoritoEncontrado.id}`);
-          setFavoritos(favoritos.filter(id => id !== puntoId));
+          await api.delete(`/favoritos/${favoritoEncontrado.id}`); // DELETE en la API
+          setFavoritos(favoritos.filter(id => id !== puntoId)); // lo saco del estado
         }
       } else {
-        // Agregar favorito
+        // Si no era favorito, lo agrego
         await api.post('/favoritos', {
           usuarioId: usuario.id,
           puntoDonacionId: puntoId
         });
-        setFavoritos([...favoritos, puntoId]);
+        setFavoritos([...favoritos, puntoId]); // lo sumo al estado
       }
     } catch (err: any) {
       console.error('Error al gestionar favorito:', err);
@@ -199,27 +203,31 @@ const MapaDonaciones: React.FC = () => {
     }
   };
 
-  // Filtrar puntos cuando cambia el filtro
+  // Cada vez que cambia el filtro (o la lista), recalculo qué puntos mostrar
   useEffect(() => {
     if (filtroActivo === 'todos') {
-      setPuntosFiltrados(puntosDonacion);
+      setPuntosFiltrados(puntosDonacion); // muestro todos
     } else {
+      // dejo solo los puntos cuyo tipo coincide con el filtro
       const filtrados = puntosDonacion.filter(punto => {
         const tipos = parsearTiposDonacion(punto.tipoDonacion);
         return tipos.some(tipo => tipo.toLowerCase() === filtroActivo.toLowerCase());
       });
       setPuntosFiltrados(filtrados);
     }
-  }, [filtroActivo, puntosDonacion]);
+  }, [filtroActivo, puntosDonacion]); // se re-ejecuta si cambia el filtro o los puntos
 
+  // El componente FiltrosDonacion llama a esto al elegir un filtro
   const handleFiltroChange = (filtro: string) => {
     setFiltroActivo(filtro);
   };
 
+  // Mientras carga, muestro un cartel
   if (loading) {
     return <div className="loading">Cargando puntos de donación...</div>;
   }
 
+  // Si hubo error, lo muestro
   if (error) {
     return <div className="error">{error}</div>;
   }
@@ -249,6 +257,7 @@ const MapaDonaciones: React.FC = () => {
       
       <div className="mapa-content-wrapper">
         <div className="mapa-wrapper-mejorado">
+          {/* MapContainer: el mapa de Leaflet, centrado en Córdoba */}
           <MapContainer
             center={[-31.4201, -64.1888]} // Córdoba, Argentina
             zoom={13}
@@ -261,15 +270,17 @@ const MapaDonaciones: React.FC = () => {
             keyboard={true}
             dragging={true}
           >
+        {/* TileLayer: las imágenes del mapa (mapa base gratuito de OpenStreetMap) */}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        {/* Recorro los puntos filtrados y dibujo un marcador por cada uno */}
         {puntosFiltrados.map((punto) => (
           <Marker
-            key={punto.id}
-            position={[punto.latitud, punto.longitud]}
-            icon={crearIconoPersonalizado(punto.tipoDonacion)}
+            key={punto.id} // key único por punto
+            position={[punto.latitud, punto.longitud]} // coordenadas del marcador
+            icon={crearIconoPersonalizado(punto.tipoDonacion)} // color según el tipo
           >
             <Popup
               closeButton={true}
@@ -346,11 +357,12 @@ const MapaDonaciones: React.FC = () => {
                 </div>
                 
                 <div className="popup-footer">
+                  {/* El botón de favorito solo se muestra si el usuario es donante */}
                   {usuario && (usuario.rol === 'DONANTE' || localStorage.getItem('rol') === 'DONANTE') && (
                     <div className="favorito-section">
                       <button
-                        className={`favorito-btn ${favoritos.includes(punto.id) ? 'es-favorito' : ''}`}
-                        onClick={() => handleToggleFavorito(punto.id)}
+                        className={`favorito-btn ${favoritos.includes(punto.id) ? 'es-favorito' : ''}`} // marca si ya es favorito
+                        onClick={() => handleToggleFavorito(punto.id)} // agrega o quita el favorito
                         title={favoritos.includes(punto.id) ? 'Eliminar de favoritos' : 'Agregar a favoritos'}
                       >
                         {favoritos.includes(punto.id) ? '⭐ En favoritos' : '☆ Agregar a favoritos'}

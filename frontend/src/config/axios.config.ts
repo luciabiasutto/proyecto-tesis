@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-// Configurar la URL base de axios
+// Creo una instancia única de Axios que reutilizan todos los componentes
 const api = axios.create({
-  baseURL: '/api', // Vite proxy manejará esto
-  timeout: 10000,
+  baseURL: '/api', // toda petición arranca con /api; el proxy de Vite la manda al backend (8080)
+  timeout: 10000, // si tarda más de 10s, corta y da error
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json', // envío y espero datos en formato JSON
   },
 });
 
@@ -80,23 +80,24 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para responses
+// Interceptor de RESPUESTAS: se ejecuta cuando el backend contesta
 api.interceptors.response.use(
   (response) => {
     if (import.meta.env.DEV) {
-      console.log('Response:', response.status, response.config.url);
+      console.log('Response:', response.status, response.config.url); // log en desarrollo
     }
-    return response;
+    return response; // dejo pasar la respuesta al componente que la pidió
   },
   (error) => {
+    // Si hay error, lo muestro en consola con status, URL y mensaje
     console.error('Response Error:', {
       status: error.response?.status,
       url: error.config?.url,
       message: error.message
     });
-    return Promise.reject(error);
+    return Promise.reject(error); // propago el error para manejarlo en el componente
   }
 );
 
-export default api;
+export default api; // exporto la instancia para usarla en toda la app
 

@@ -3,6 +3,10 @@ package com.donaciones.donacionesbackend.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Registro de una donación en el flujo completo del sistema.
+ * Une punto de donación, donante  y beneficiario cuando ya se entrega.
+ */
 @Entity
 @Table(name = "donaciones")
 public class Donacion {
@@ -11,97 +15,88 @@ public class Donacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "punto_donacion_id")
-    private PuntoDonacion puntoDonacion;
+    /** Punto donde se depositó o registró la donación. */
+    @Column(name = "punto_donacion_id", nullable = false)
+    private Long puntoDonacionId;
     
-    @Column(name = "donante_nombre", nullable = false)
-    private String donanteNombre;
+    /** Puede ser null si la donación es anónima. */
+    @Column(name = "donante_id")
+    private Long donanteId;
     
-    @Column(name = "donante_email")
-    private String donanteEmail;
+    @Column(nullable = false)
+    private String tipoDonacion;
     
-    @Column(name = "donante_telefono")
-    private String donanteTelefono;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_donacion", nullable = false)
-    private TipoDonacion tipoDonacion;
+    @Column(nullable = false)
+    private Integer cantidad;
     
     @Column(columnDefinition = "TEXT")
     private String descripcion;
     
+    /**
+     * Estado actual en el ciclo de vida (PENDIENTE, VERIFICADA, RECIBIDA, etc.).
+     * Lo guardo como String para flexibilidad con estados del punto y del admin.
+     */
     @Column(nullable = false)
-    private Integer cantidad = 1;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EstadoDonacion estado = EstadoDonacion.RECIBIDA;
+    private String estado; // PENDIENTE, VERIFICADA, RECHAZADA, RECIBIDA, CLASIFICADA, DISTRIBUIDA, ENTREGADA
     
     @Column(name = "fecha_donacion")
-    private LocalDateTime fechaDonacion = LocalDateTime.now();
+    private LocalDateTime fechaDonacion;
+    
+    /** Se completa cuando la donación ya tiene destinatario asignado. */
+    @Column(name = "beneficiario_id")
+    private Long beneficiarioId;
     
     @Column(name = "fecha_entrega")
     private LocalDateTime fechaEntrega;
     
-    @Column(name = "beneficiario_nombre")
-    private String beneficiarioNombre;
-    
-    @Column(name = "beneficiario_contacto")
-    private String beneficiarioContacto;
+    /** Notas internas del punto o del admin durante el proceso. */
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
     
     // Constructores
     public Donacion() {}
     
-    public Donacion(PuntoDonacion puntoDonacion, String donanteNombre, String donanteEmail,
-                   String donanteTelefono, TipoDonacion tipoDonacion, String descripcion,
-                   Integer cantidad) {
-        this.puntoDonacion = puntoDonacion;
-        this.donanteNombre = donanteNombre;
-        this.donanteEmail = donanteEmail;
-        this.donanteTelefono = donanteTelefono;
+    public Donacion(Long puntoDonacionId, String tipoDonacion, Integer cantidad, 
+                   String descripcion, String estado) {
+        this.puntoDonacionId = puntoDonacionId;
         this.tipoDonacion = tipoDonacion;
-        this.descripcion = descripcion;
         this.cantidad = cantidad;
+        this.descripcion = descripcion;
+        this.estado = estado;
+        this.fechaDonacion = LocalDateTime.now();
     }
     
     // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
-    public PuntoDonacion getPuntoDonacion() { return puntoDonacion; }
-    public void setPuntoDonacion(PuntoDonacion puntoDonacion) { this.puntoDonacion = puntoDonacion; }
+    public Long getPuntoDonacionId() { return puntoDonacionId; }
+    public void setPuntoDonacionId(Long puntoDonacionId) { this.puntoDonacionId = puntoDonacionId; }
     
-    public String getDonanteNombre() { return donanteNombre; }
-    public void setDonanteNombre(String donanteNombre) { this.donanteNombre = donanteNombre; }
+    public Long getDonanteId() { return donanteId; }
+    public void setDonanteId(Long donanteId) { this.donanteId = donanteId; }
     
-    public String getDonanteEmail() { return donanteEmail; }
-    public void setDonanteEmail(String donanteEmail) { this.donanteEmail = donanteEmail; }
-    
-    public String getDonanteTelefono() { return donanteTelefono; }
-    public void setDonanteTelefono(String donanteTelefono) { this.donanteTelefono = donanteTelefono; }
-    
-    public TipoDonacion getTipoDonacion() { return tipoDonacion; }
-    public void setTipoDonacion(TipoDonacion tipoDonacion) { this.tipoDonacion = tipoDonacion; }
-    
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public String getTipoDonacion() { return tipoDonacion; }
+    public void setTipoDonacion(String tipoDonacion) { this.tipoDonacion = tipoDonacion; }
     
     public Integer getCantidad() { return cantidad; }
     public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
     
-    public EstadoDonacion getEstado() { return estado; }
-    public void setEstado(EstadoDonacion estado) { this.estado = estado; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
     
     public LocalDateTime getFechaDonacion() { return fechaDonacion; }
     public void setFechaDonacion(LocalDateTime fechaDonacion) { this.fechaDonacion = fechaDonacion; }
     
+    public Long getBeneficiarioId() { return beneficiarioId; }
+    public void setBeneficiarioId(Long beneficiarioId) { this.beneficiarioId = beneficiarioId; }
+    
     public LocalDateTime getFechaEntrega() { return fechaEntrega; }
     public void setFechaEntrega(LocalDateTime fechaEntrega) { this.fechaEntrega = fechaEntrega; }
     
-    public String getBeneficiarioNombre() { return beneficiarioNombre; }
-    public void setBeneficiarioNombre(String beneficiarioNombre) { this.beneficiarioNombre = beneficiarioNombre; }
-    
-    public String getBeneficiarioContacto() { return beneficiarioContacto; }
-    public void setBeneficiarioContacto(String beneficiarioContacto) { this.beneficiarioContacto = beneficiarioContacto; }
+    public String getObservaciones() { return observaciones; }
+    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
 }
