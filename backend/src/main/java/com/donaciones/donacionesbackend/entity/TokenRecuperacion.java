@@ -3,10 +3,7 @@ package com.donaciones.donacionesbackend.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Token temporal para recuperar contraseña olvidada.
- * Expira a la hora y solo se puede usar una vez por seguridad.
- */
+//Token temporal para recuperar contraseña olvidada.
 @Entity
 @Table(name = "tokens_recuperacion")
 public class TokenRecuperacion {
@@ -22,7 +19,7 @@ public class TokenRecuperacion {
     @Column(nullable = false)
     private String email;
     
-    // Indica en qué tabla buscar al usuario (DONANTE, ADMINISTRADOR, ORGANIZACION) 
+    // Indica en qué tabla buscar al usuario
     @Column(nullable = false)
     private String rol; // DONANTE, ADMINISTRADOR, ORGANIZACION
     

@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Organización que puede crear y gestionar puntos de donación
- * Sus puntos nuevos quedan PENDIENTES hasta que un admin los apruebe
+ * organización que puede crear y gestionar puntos de donación
+ * sus puntos nuevos quedan PENDIENTES hasta que un admin los apruebe
  */
 @Entity
 @Table(name = "organizaciones")
@@ -22,7 +22,7 @@ public class Organizacion {
     @Column(nullable = false, unique = true)
     private String email;
     
-    /** Contraseña hasheada con BCrypt. */
+    /** Contraseña hasheada con BCrypt */
     @Column(nullable = false)
     private String password;
     

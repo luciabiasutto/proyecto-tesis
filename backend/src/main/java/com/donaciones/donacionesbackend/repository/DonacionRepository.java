@@ -11,25 +11,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Consultas sobre donaciones: filtros por estado, punto, fechas y reportes.
+ * consultas sobre donaciones, filtros por estado, punto, fechas y reportes
  */
 @Repository
 public interface DonacionRepository extends JpaRepository<Donacion, Long> {
     
     List<Donacion> findByEstado(String estado);
     
-    /** Donaciones registradas en un punto específico del mapa. */
+    /** Donaciones registradas en un punto específico del mapa */
     List<Donacion> findByPuntoDonacionId(Long puntoDonacionId);
     
     List<Donacion> findByTipoDonacion(String tipoDonacion);
     
-    /** Historial de lo que recibió un beneficiario. */
+    /** Historial de lo que recibió un beneficiario */
     List<Donacion> findByBeneficiarioId(Long beneficiarioId);
     
-    /** Historial de lo que donó un usuario registrado. */
+    /** Historial de lo que donó un usuario registrado */
     List<Donacion> findByDonanteId(Long donanteId);
     
-    /** Reportes por rango de fechas para estadísticas del admin. */
+    /** Reportes por rango de fechas para estadísticas del admin */
     @Query("SELECT d FROM Donacion d WHERE d.fechaDonacion BETWEEN :fechaInicio AND :fechaFin")
     List<Donacion> findByFechaDonacionBetween(@Param("fechaInicio") LocalDateTime fechaInicio, 
                                             @Param("fechaFin") LocalDateTime fechaFin);

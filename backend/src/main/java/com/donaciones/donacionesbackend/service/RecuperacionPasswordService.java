@@ -13,9 +13,9 @@ import java.util.Base64;
 import java.util.Optional;
 
 /**
- * Servicio de recuperación de contraseña.
- * Acá está la lógica de negocio: validar que el usuario exista, generar el token,
- * guardarlo en BD y coordinar el envío del email. Lo usan donantes, orgs y admins.
+ * servicio de recuperación de contraseña
+ * acá está la lógica de negocio: validar que el usuario exista, generar el token,
+ * guardarlo en BD y coordinar el envío del email. Lo usan donantes, orgs y admins
  */
 @Service
 public class RecuperacionPasswordService {
@@ -42,8 +42,8 @@ public class RecuperacionPasswordService {
     private String baseUrl;
     
     /**
-     * Procesa la solicitud de recuperación: busca al usuario por rol, genera un token
-     * y dispara el email. Lo invoca el controlador cuando alguien pide "olvidé mi contraseña".
+     * procesa la solicitud de recuperación, busca al usuario por rol, genera un token
+     * y dispara el email. Lo invoca el controlador cuando alguien pide "olvidé mi contraseña"
      */
     public boolean solicitarRecuperacion(String email, String rol) {
         try {
@@ -80,7 +80,7 @@ public class RecuperacionPasswordService {
             TokenRecuperacion tokenRecuperacion = new TokenRecuperacion(token, email, rol.toUpperCase());
             tokenRecuperacionRepository.save(tokenRecuperacion);
             
-            // Intentar enviar email (si falla, el token ya está guardado y se puede usar)
+            // Intentar enviar email
             boolean emailEnviado = emailService.enviarEmailRecuperacion(email, token, rol.toUpperCase());
             
             if (!emailEnviado) {
@@ -96,8 +96,8 @@ public class RecuperacionPasswordService {
     }
     
     /**
-     * Cambia la contraseña del usuario si el token es válido y no expiró.
-     * Lo invoca el controlador cuando el usuario completa el formulario de nueva clave.
+     * cambia la contraseña del usuario si el token es válido y no expiró
+     * lo invoca el controlador cuando el usuario completa el formulario de nueva clave
      */
     public boolean resetearPassword(String token, String nuevaPassword) {
         try {
@@ -158,8 +158,8 @@ public class RecuperacionPasswordService {
     }
     
     /**
-     * Genera un token aleatorio seguro para el enlace de recuperación.
-     * Método interno; no lo llama el frontend directamente.
+     * genera un token aleatorio seguro para el enlace de recuperación
+     * método interno, no lo llama el frontend directamente
      */
     private String generarToken() {
         SecureRandom random = new SecureRandom();

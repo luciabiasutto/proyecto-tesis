@@ -7,9 +7,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 /**
- * Servicio de envío de correos.
- * Por ahora solo manda el mail de recuperación de contraseña; lo usa RecuperacionPasswordService
- * cuando un donante, org o admin pide restablecer su clave.
+ * servicio de envío de correos
+ * por ahora solo manda el mail de recuperación de contraseña, lo usa RecuperacionPasswordService
+ * cuando un donante, org o admin pide restablecer su clave
  */
 @Service
 public class EmailService {
@@ -21,8 +21,8 @@ public class EmailService {
     private String baseUrl;
     
     /**
-     * Arma y envía el correo con el enlace para restablecer la contraseña.
-     * Lo llama RecuperacionPasswordService; el usuario recibe el mail y abre el link en el navegador.
+     * arma y envía el correo con el enlace para restablecer la contraseña
+     * lo llama RecuperacionPasswordService; el usuario recibe el mail y abre el link en el navegador
      */
     public boolean enviarEmailRecuperacion(String email, String token, String rol) {
         try {
@@ -42,14 +42,14 @@ public class EmailService {
                     "Equipo del Sistema de Donaciones";
             
             message.setText(cuerpo);
-            message.setFrom("noreply@donaciones.com"); // Cambiar por tu email
+            message.setFrom("noreply@donaciones.com"); // cambiar por tu email
             
             mailSender.send(message);
             System.out.println("Email de recuperación enviado a: " + email);
             return true;
         } catch (Exception e) {
             System.err.println("Error al enviar email (el token se generó correctamente): " + e.getMessage());
-            // No lanzamos excepción, solo registramos el error
+            // no lanzamos excepción, solo registramos el error
             return false;
         }
     }

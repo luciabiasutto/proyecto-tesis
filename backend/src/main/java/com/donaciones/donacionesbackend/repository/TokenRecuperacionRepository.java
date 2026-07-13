@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Tokens de recuperación de contraseña.
- * Busco por token del link o por email+rol al generar uno nuevo.
+ * tokens de recuperación de contraseña
+ * busco por token del link o por email+rol al generar uno nuevo
  */
 @Repository
 public interface TokenRecuperacionRepository extends JpaRepository<TokenRecuperacion, Long> {

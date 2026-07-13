@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Favoritos de puntos de donación por usuario.
- * Lo uso en la sección "Mis lugares" del frontend.
+ * favoritos de puntos de donación por usuario
+ * lo uso en la sección "Mis lugares" del frontend
  */
 @Repository
 public interface FavoritoRepository extends JpaRepository<Favorito, Long> {

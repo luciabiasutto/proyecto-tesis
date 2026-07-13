@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 
-//Representa a un administrador del sistema.
-//Los admins gestionan puntos, donaciones y usuarios por eso tienen su propia tabla
+//representa a un administrador del sistema
+//los admins gestionan puntos, donaciones y usuarios por eso tienen su propia tabla
 @Entity
 @Table(name = "administradores")
 public class Administrador {
@@ -20,18 +20,18 @@ public class Administrador {
     @Column(nullable = false)
     private String apellido;
     
-    //Email único: lo uso como usuario para el login unificado.
+    //Email único, lo uso como usuario para el login unificado.
     @Column(nullable = false, unique = true)
     private String email;
     
-    /** Contraseña hasheada con BCrypt; nunca se guarda en texto plano al registrarse. */
+    /** Contraseña hasheada con BCrypt nunca se guarda en texto plano al registrarse */
     @Column(nullable = false)
     private String password;
     
     @Column(nullable = true)
     private String telefono;
     
-    //Siempre ADMINISTRADOR; lo guardo para distinguir roles en el auth unificado
+    //Siempre ADMINISTRADOR, lo guardo para distinguir roles en el auth unificado
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Rol rol = Rol.ADMINISTRADOR;

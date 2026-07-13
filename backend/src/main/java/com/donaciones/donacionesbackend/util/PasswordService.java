@@ -4,9 +4,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * Servicio para hashear y verificar contraseñas con BCrypt.
- * Si en la BD todavía hay claves viejas en texto plano, el login sigue funcionando
- * y las actualiza al hash en el próximo inicio de sesión.
+ * servicio para hashear y verificar contraseñas con BCrypt
+ * si en la BD todavía hay claves viejas en texto plano, el login sigue funcionando
+ * y las actualiza al hash en el próximo inicio de sesión
  */
 @Service
 public class PasswordService {

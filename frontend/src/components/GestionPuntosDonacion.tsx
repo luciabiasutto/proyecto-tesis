@@ -34,16 +34,16 @@ interface PuntoDonacion {
 
 /**
  * Componente para gestionar los puntos de donación
- * Permite al administrador ver todos los puntos (activos e inactivos),
+ * Permite al administrador ver todos los puntos,
  * crear nuevos, editar y desactivar puntos existentes
  */
-// Vista del administrador: crear, editar, activar y borrar puntos de donación
+// Vista del administrador. crear, editar, activar y borrar puntos de donación
 const GestionPuntosDonacion: React.FC = () => {
   const [puntos, setPuntos] = useState<PuntoDonacion[]>([]); // lista de puntos
   const [loading, setLoading] = useState(true); // true mientras carga
   const [error, setError] = useState<string | null>(null); // mensaje de error
   const [showForm, setShowForm] = useState(false); // Controla si se muestra el formulario en modal
-  const [editingPunto, setEditingPunto] = useState<PuntoDonacion | null>(null); // Punto que se está editando (null = crear nuevo)
+  const [editingPunto, setEditingPunto] = useState<PuntoDonacion | null>(null); // Punto que se está editando
 
   // Tipos de donación disponibles en el sistema
   const tiposDonacionDisponibles = ['ropa', 'vidrio', 'plastico', 'papel', 'organicos', 'otros'];

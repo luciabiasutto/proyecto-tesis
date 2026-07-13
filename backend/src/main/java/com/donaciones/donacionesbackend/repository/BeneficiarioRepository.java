@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio de beneficiarios.
- * Centraliza las consultas que necesito para registro, login y asignación de donaciones.
+ * repositorio de beneficiarios
+ * centraliza las consultas que necesito para registro, login y asignación de donaciones
  */
 @Repository
 public interface BeneficiarioRepository extends JpaRepository<Beneficiario, Long> {

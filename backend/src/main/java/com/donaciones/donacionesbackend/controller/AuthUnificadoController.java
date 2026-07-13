@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Controlador de autenticación unificado.
- * Acá centralicé el login y el registro para donantes, organizaciones y administradores,
- * así el frontend solo habla con /auth en lugar de tener un endpoint por cada tipo de usuario.
+ * Controlador de autenticación unificado
+ * acá centralicé el login y el registro para donantes, organizaciones y administradores,
+ * así el frontend solo habla con /auth en lugar de tener un endpoint por cada tipo de usuario
  */
 @RestController
 @RequestMapping("/auth")
@@ -42,9 +42,9 @@ public class AuthUnificadoController {
     private PasswordService passwordService;
 
     /**
-     * Inicio de sesión para cualquier tipo de usuario.
-     * La contraseña se compara con BCrypt; si el usuario es viejo (texto plano), igual puede entrar
-     * y en ese login se guarda ya hasheada.
+     * Inicio de sesión para cualquier tipo de usuario
+     * la contraseña se compara con BCrypt; si el usuario es viejo (texto plano), igual puede entrar
+     * y en ese login se guarda ya hasheada
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {

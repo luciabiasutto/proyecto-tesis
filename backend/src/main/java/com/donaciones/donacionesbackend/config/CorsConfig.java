@@ -10,11 +10,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 
-/**Complementa al CorsFilter para que todas las capas acepten peticiones del frontend. */
+/**Complementa al CorsFilter para que todas las capas acepten peticiones del frontend */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    /** Reglas para los controladores REST, rutas. */
+    /** Reglas para los controladores REST, rutas */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

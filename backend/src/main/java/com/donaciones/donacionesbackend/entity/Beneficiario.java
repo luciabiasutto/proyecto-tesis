@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 /**
  * Persona que recibe donaciones a través del sistema
- * Necesita documento y dirección para poder asignarle entregas
+ * necesita documento y dirección para poder asignarle entregas
  */
 @Entity
 @Table(name = "beneficiarios")
@@ -21,7 +21,7 @@ public class Beneficiario {
     @Column(nullable = false)
     private String apellido;
     
-    //DNI u otro documento; lo uso para evitar registros duplicados.
+    //DNI u otro documento, lo uso para evitar registros duplicados
     @Column(nullable = false, unique = true)
     private String documento;
     
@@ -31,7 +31,7 @@ public class Beneficiario {
     @Column(nullable = false)
     private String email;
     
-    // Dirección de entrega; puede ser larga por eso uso TEXT. 
+    // Dirección de entrega, puede ser larga por eso uso TEXT
     @Column(nullable = false, columnDefinition = "TEXT")
     private String direccion;
     

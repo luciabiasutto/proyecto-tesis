@@ -1,8 +1,8 @@
 package com.donaciones.donacionesbackend.entity;
 
 /**
- * Roles posibles en el sistema de donaciones.
- * Cada tabla de usuario guarda su rol para el login unificado y los permisos.
+ * roles posibles en el sistema de donaciones
+ * cada tabla de usuario guarda su rol para el login unificado y los permisos
  */
 public enum Rol {
 

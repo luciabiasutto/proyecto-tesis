@@ -7,12 +7,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Acceso a organizaciones que gestionan puntos de donación.
+ * Acceso a organizaciones que gestionan puntos de donación
  */
 @Repository
 public interface OrganizacionRepository extends JpaRepository<Organizacion, Long> {
 
-    /** Login y validación de email único al registrarse. */
+    /** Login y validación de email único al registrarse */
     Optional<Organizacion> findByEmail(String email);
 }
 

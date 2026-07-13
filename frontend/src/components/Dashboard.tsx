@@ -111,7 +111,7 @@ const Dashboard: React.FC<DashboardProps> = ({ usuario, rol }) => {
         </nav>
       )}
       
-      {/* Zona principal: muestra el componente de la pestaña activa */}
+      {/* Zona principal, muestra el componente de la pestaña activa */}
       <main className="dashboard-content">
         {renderContent()}
       </main>

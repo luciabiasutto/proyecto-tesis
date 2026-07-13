@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Registro de una donación en el flujo completo del sistema.
- * Une punto de donación, donante  y beneficiario cuando ya se entrega.
+ * registro de una donación en el flujo completo del sistema
+ * une punto de donación, donante  y beneficiario cuando ya se entrega
  */
 @Entity
 @Table(name = "donaciones")
@@ -15,11 +15,11 @@ public class Donacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    /** Punto donde se depositó o registró la donación. */
+    /** Punto donde se depositó o registró la donación */
     @Column(name = "punto_donacion_id", nullable = false)
     private Long puntoDonacionId;
     
-    /** Puede ser null si la donación es anónima. */
+    /** Puede ser null si la donación es anónima */
     @Column(name = "donante_id")
     private Long donanteId;
     
@@ -33,8 +33,8 @@ public class Donacion {
     private String descripcion;
     
     /**
-     * Estado actual en el ciclo de vida (PENDIENTE, VERIFICADA, RECIBIDA, etc.).
-     * Lo guardo como String para flexibilidad con estados del punto y del admin.
+     * estado actual en el ciclo de vida
+     * lo guardo como String para flexibilidad con estados del punto y del admin
      */
     @Column(nullable = false)
     private String estado; // PENDIENTE, VERIFICADA, RECHAZADA, RECIBIDA, CLASIFICADA, DISTRIBUIDA, ENTREGADA
@@ -42,14 +42,14 @@ public class Donacion {
     @Column(name = "fecha_donacion")
     private LocalDateTime fechaDonacion;
     
-    /** Se completa cuando la donación ya tiene destinatario asignado. */
+    /** Se completa cuando la donación ya tiene destinatario asignado */
     @Column(name = "beneficiario_id")
     private Long beneficiarioId;
     
     @Column(name = "fecha_entrega")
     private LocalDateTime fechaEntrega;
     
-    /** Notas internas del punto o del admin durante el proceso. */
+    /** Notas internas del punto o del admin durante el proceso */
     @Column(columnDefinition = "TEXT")
     private String observaciones;
     

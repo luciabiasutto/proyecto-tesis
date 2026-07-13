@@ -32,7 +32,7 @@ public class PuntoDonacionController {
     @Autowired
     private OrganizacionRepository organizacionRepository;
     
-    //Devuelve todos los puntos sin filtrar (activos, inactivos, pendientes, etc)
+    //Devuelve todos los puntos sin filtrar
     @GetMapping("/todos")
     public ResponseEntity<List<PuntoDonacion>> getAllPuntos() {
         try {
@@ -45,7 +45,7 @@ public class PuntoDonacionController {
         }
     }
     
-    //Lista puntos según el parámetro ?todos=.
+    //Lista puntos según el parámetro
     @GetMapping
     public ResponseEntity<List<PuntoDonacion>> getAllPuntosActivos(@RequestParam(required = false) String todos) {
         try {
@@ -148,8 +148,8 @@ public class PuntoDonacionController {
     }
     
     /**
-     * Busca puntos dentro de un radio en kilómetros desde una lat/lng.
-     * Lo usa el donante en el mapa para encontrar lugares cerca de su ubicación.
+     * busca puntos dentro de un radio en kilómetros desde una lat/lng
+     * lo usa el donante en el mapa para encontrar lugares cerca de su ubicación
      */
     @GetMapping("/cercanos")
     public ResponseEntity<List<PuntoDonacion>> getPuntosCercanos(
@@ -160,7 +160,7 @@ public class PuntoDonacionController {
         return ResponseEntity.ok(puntos);
     }
     
-    //Busca puntos activos por nombre (búsqueda parcial, sin importar mayúsculas)
+    //busca puntos activos por nombre
     @GetMapping("/buscar")
     public ResponseEntity<List<PuntoDonacion>> buscarPuntos(@RequestParam String nombre) {
         List<PuntoDonacion> puntos = puntoDonacionRepository.findByNombreContainingIgnoreCaseAndActivoTrue(nombre);
@@ -168,8 +168,8 @@ public class PuntoDonacionController {
     }
     
     /**
-     * Responde las peticiones OPTIONS (preflight de CORS).
-     * Lo necesita el navegador antes de POST/PUT/DELETE; no lo llama ningún usuario directamente.
+     * Responde las peticiones OPTIONS
+     * Lo necesita el navegador antes de POST/PUT/DELETE; no lo llama ningún usuario directamente
      */
     @RequestMapping(value = "/**", method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> handleOptions(HttpServletResponse response) {
@@ -180,7 +180,7 @@ public class PuntoDonacionController {
         return ResponseEntity.ok().build();
     }
 
-    //Crea un punto nuevo. Si lo crea una org queda PENDIENTE hasta que el admin apruebe
+    //Crea un punto nuevo
     @PostMapping
     public ResponseEntity<PuntoDonacion> crearPunto(@RequestBody Map<String, Object> puntoData, HttpServletResponse response) {
         // Configuro headers CORS manualmente porque a veces el @CrossOrigin no funciona bien
@@ -233,7 +233,7 @@ public class PuntoDonacionController {
         }
     }
     
-    //Actualiza los datos de un punto (solo los campos que mande el frontend)
+    //Actualiza los datos de un punto
     @PutMapping("/{id}")
     @Transactional // Uso @Transactional para asegurar que todo se guarde o nada
     public ResponseEntity<PuntoDonacion> actualizarPunto(@PathVariable Long id, @RequestBody Map<String, Object> puntoData) {
@@ -250,7 +250,7 @@ public class PuntoDonacionController {
                     }
                 }
                 
-                // Actualizo solo los campos que vienen en el request (actualización parcial)
+                // Actualizo solo los campos que vienen en el request
                 if (puntoData.containsKey("nombre") && puntoData.get("nombre") != null) {
                     punto.setNombre((String) puntoData.get("nombre"));
                 }
@@ -287,7 +287,7 @@ public class PuntoDonacionController {
                     }
                 }
                 
-                // Manejo especial para el campo "activo" porque puede venir en diferentes formatos (boolean, string, number)
+                // Manejo especial para el campo "activo" porque puede venir en diferentes formatos
                 if (puntoData.containsKey("activo")) {
                     Boolean activo = null;
                     Object activoObj = puntoData.get("activo");
@@ -357,7 +357,7 @@ public class PuntoDonacionController {
             }
             
             // Si el usuario está intentando eliminar y es una organización, y el punto aparece en su lista,
-            // entonces es de organización (incluso si no tiene tipoCreador configurado)
+            // entonces es de organización
             if (!esDeOrganizacion && usuarioId != null) {
                 List<PuntoDonacion> puntosOrganizacion = puntoDonacionRepository.findByUsuarioCreadorIdAndTipoCreador(usuarioId, Rol.ORGANIZACION);
                 boolean estaEnLista = puntosOrganizacion.stream().anyMatch(p -> p.getId().equals(id));
@@ -376,7 +376,7 @@ public class PuntoDonacionController {
                 }
                 
                 // Verifico los permisos para eliminar
-                // La lógica es simple: si el punto está en la lista de puntos de la organización,
+                // si el punto está en la lista de puntos de la organización,
                 // entonces el usuario tiene permisos para eliminarlo
                 boolean tienePermisos = false;
                 
@@ -390,7 +390,6 @@ public class PuntoDonacionController {
                 }
                 
                 // Si aún no tiene permisos, verifico si el punto está en la lista de puntos de la organización
-                // Si aparece en "Mis Puntos", entonces pertenece a esa organización y tiene permisos
                 if (!tienePermisos) {
                     System.out.println("Verificando si el punto está en la lista de puntos de la organización " + usuarioId);
                     List<PuntoDonacion> puntosOrganizacion = puntoDonacionRepository.findByUsuarioCreadorIdAndTipoCreador(usuarioId, Rol.ORGANIZACION);
@@ -443,8 +442,8 @@ public class PuntoDonacionController {
     }
     
     /**
-     * Aprueba un punto que estaba pendiente y lo deja visible en el mapa.
-     * Solo lo usa el administrador desde la pantalla de aprobación de puntos
+     * Aprueba un punto que estaba pendiente y lo deja visible en el mapa
+     * solo lo usa el administrador desde la pantalla de aprobación de puntos
      */
     @PostMapping("/{id}/aprobar")
     public ResponseEntity<PuntoDonacion> aprobarPunto(@PathVariable Long id) {

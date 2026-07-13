@@ -72,7 +72,7 @@
   opacity: 0.1;
 }
 
-/* Cambiar el hover de Ropa para que no sea rojo - usar lila */
+/* Cambiar el hover de Ropa para que no sea rojo, usar lila */
 .filtro-btn.filtro-ropa:hover {
   border-color: #9b59b6 !important;
   background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
@@ -124,7 +124,7 @@
   }
 }
 
-/* Responsive: en mapa móvil el scroll horizontal lo define App.css / InicioDonante.css */
+/* Responsive, en mapa móvil el scroll horizontal lo define App.css / InicioDonante.css */
 @media (max-width: 768px) {
   .filtros-donacion {
     padding: 0;

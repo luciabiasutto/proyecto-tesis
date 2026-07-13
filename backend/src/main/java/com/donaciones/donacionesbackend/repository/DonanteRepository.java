@@ -7,9 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repositorio de donantes registrados en la plataforma.
- */
+//Repositorio de donantes registrados en la plataforma
 @Repository
 public interface DonanteRepository extends JpaRepository<Donante, Long> {
 

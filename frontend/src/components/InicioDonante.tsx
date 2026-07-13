@@ -8,7 +8,7 @@ interface InicioDonanteProps {
   usuario: any;
 }
 
-// Pantalla de inicio del donante: dos tarjetas grandes (mapa y favoritos)
+// Pantalla de inicio del donante, dos tarjetas grandes (mapa y favoritos)
 const InicioDonante: React.FC<InicioDonanteProps> = ({ usuario }) => {
   const [showMapaModal, setShowMapaModal] = useState(false); // controla si el mapa se abre en ventana modal
   const [showMisFavoritos, setShowMisFavoritos] = useState(false); // controla si muestro la vista de favoritos

@@ -28,7 +28,7 @@ const FiltrosDonacion: React.FC<FiltrosDonacionProps> = ({ filtroActivo, onFiltr
           <button
             key={tipo.id} // key único por filtro
             className={`filtro-btn ${filtroActivo === tipo.id ? 'activo' : ''} ${tipo.id === 'ropa' ? 'filtro-ropa' : ''}`} // marca el filtro activo
-            onClick={() => onFiltroChange(tipo.id)} // aviso al padre (mapa) qué filtro se eligió
+            onClick={() => onFiltroChange(tipo.id)} // aviso al mapa qué filtro se eligió
             style={{
               '--color-filtro': tipo.color,
               '--hover-color': tipo.hoverColor || tipo.color

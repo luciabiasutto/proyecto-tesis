@@ -5,8 +5,8 @@ import java.time.LocalTime;
 import java.time.LocalDateTime;
 
 /**
- * Punto de donación visible en el mapa del frontend.
- * Acá guardo ubicación, horarios, tipos aceptados y el flujo de aprobación por el admin.
+ * Punto de donación visible en el mapa del frontend
+ * Acá guardo ubicación, horarios, tipos aceptados y el flujo de aprobación por el admin
  */
 @Entity
 @Table(name = "puntos_donacion")
@@ -73,19 +73,12 @@ public class PuntoDonacion {
     @Column(name = "usuario_creador_id")
     private Long usuarioCreadorId;
     
-    /**
-     * Tipo de usuario que creó el punto
-     * ORGANIZACION: creado por una organización  
-     * ADMINISTRADOR: creado por un admin  
-     */
+    //tipo de usuario que creo el punto
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_creador")
     private Rol tipoCreador;
     
-    /**
-     * Motivo por el cual el punto fue rechazado
-     * Solo se llena cuando estado = RECHAZADO
-     */
+    //Motivo por el cual el punto fue rechazado
     @Column(name = "motivo_rechazo", columnDefinition = "TEXT")
     private String motivoRechazo;
     

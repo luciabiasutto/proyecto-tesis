@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Punto guardado como favorito por un donante.
- * Sirve para recordar lugares frecuentes y agendar visitas.
+ * Punto guardado como favorito por un donante
+ * sirve para recordar lugares frecuentes y agendar visitas
  */
 @Entity
 @Table(name = "favoritos")
@@ -22,19 +22,18 @@ public class Favorito {
     @Column(name = "punto_donacion_id", nullable = false)
     private Long puntoDonacionId;
     
-    // Etiqueta personalizada, ej: "cerca de casa"
+    // Etiqueta personalizada
     @Column(name = "etiqueta", length = 100)
     private String etiqueta;
     
     @Column(name = "fecha_agregado", nullable = false)
     private LocalDateTime fechaAgregado;
     
-    //Fecha planificada para ir a donar; es opcional 
+    //Fecha planificada para ir a donar
     @Column(name = "fecha_agendada")
     private LocalDateTime fechaAgendada;
     
-    // Relación Many-to-One con PuntoDonacion (sin crear foreign key para evitar problemas)
-    /** Lo cargo en lectura para devolver datos del punto sin otra consulta. */
+    // Relación Many-to-One con PuntoDonacion
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "punto_donacion_id", insertable = false, updatable = false)
     private PuntoDonacion puntoDonacion;

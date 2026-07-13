@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../config/axios.config';
 import './AprobacionPuntos.css';
 
-// Función helper para formatear horarios (eliminar segundos)
+// Función helper para formatear horarios 
 const formatearHorario = (horario: string | null | undefined): string => {
   if (!horario) return '';
   // Si tiene formato HH:mm:ss, eliminar los segundos
@@ -62,7 +62,7 @@ const AprobacionPuntos: React.FC = () => {
     }
   };
 
-  // Aprueba un punto: se publica en el mapa
+  // Aprueba un punto, se publica en el mapa
   const handleAprobar = async (id: number) => {
     if (!window.confirm('¿Estás seguro de que quieres aprobar este punto? Se publicará en el mapa.')) {
       return; // si el admin cancela, no hago nada
@@ -71,14 +71,14 @@ const AprobacionPuntos: React.FC = () => {
     try {
       await api.post(`/puntos-donacion/${id}/aprobar`); // POST de aprobación
       setError(null);
-      fetchPuntosPendientes(); // recargo la lista (el aprobado ya no aparece)
+      fetchPuntosPendientes(); // recargo la lista 
     } catch (err: any) {
       console.error('Error:', err);
       setError('Error al aprobar el punto');
     }
   };
 
-  // Rechaza un punto: requiere escribir un motivo
+  // Rechaza un punto, requiere escribir un motivo
   const handleRechazar = async () => {
     if (!rechazoModal.puntoId || !rechazoModal.motivo.trim()) {
       setError('Debes ingresar un motivo de rechazo');
