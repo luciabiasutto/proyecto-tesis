@@ -19,6 +19,9 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
     Optional<Favorito> findByUsuarioIdAndPuntoDonacionId(Long usuarioId, Long puntoDonacionId);
     
     void deleteByUsuarioIdAndPuntoDonacionId(Long usuarioId, Long puntoDonacionId);
+
+    // Borra todos los favoritos de un punto (antes de eliminar el punto)
+    void deleteByPuntoDonacionId(Long puntoDonacionId);
     
     /** Comprueba rápido si ya marcó ese punto como favorito. */
     boolean existsByUsuarioIdAndPuntoDonacionId(Long usuarioId, Long puntoDonacionId);

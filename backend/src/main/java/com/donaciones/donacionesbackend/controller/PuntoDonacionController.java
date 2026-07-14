@@ -7,6 +7,7 @@ import com.donaciones.donacionesbackend.entity.Rol;
 import com.donaciones.donacionesbackend.entity.Organizacion;
 import com.donaciones.donacionesbackend.repository.PuntoDonacionRepository;
 import com.donaciones.donacionesbackend.repository.OrganizacionRepository;
+import com.donaciones.donacionesbackend.repository.FavoritoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,9 @@ public class PuntoDonacionController {
     
     @Autowired
     private OrganizacionRepository organizacionRepository;
+
+    @Autowired
+    private FavoritoRepository favoritoRepository;
     
     //Devuelve todos los puntos sin filtrar
     @GetMapping("/todos")
@@ -324,7 +328,7 @@ public class PuntoDonacionController {
         }
     }
     
-    //Elimina o desactiva un punto según quién lo creó
+    //Elimina un punto. Admin (sin usuarioId) puede borrar cualquiera; organización solo los suyos
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> desactivarPunto(@PathVariable Long id, @RequestParam(required = false) Long usuarioId) {
@@ -343,6 +347,15 @@ public class PuntoDonacionController {
             System.out.println("Punto encontrado: " + puntoActual.getNombre());
             System.out.println("Tipo creador: " + puntoActual.getTipoCreador());
             System.out.println("Usuario creador ID: " + puntoActual.getUsuarioCreadorId());
+
+            // Panel admin (sin usuarioId): eliminar físicamente cualquier punto
+            if (usuarioId == null) {
+                System.out.println("Eliminación desde admin: hard delete del punto " + id);
+                favoritoRepository.deleteByPuntoDonacionId(id); // limpio favoritos primero (FK)
+                puntoDonacionRepository.delete(puntoActual);
+                puntoDonacionRepository.flush();
+                return ResponseEntity.ok().build();
+            }
             
             // Determino si el punto fue creado por una organización
             boolean esDeOrganizacion = puntoActual.getTipoCreador() != null && 
@@ -351,14 +364,14 @@ public class PuntoDonacionController {
             System.out.println("Es de organización (por tipoCreador): " + esDeOrganizacion);
             
             // Si no tiene tipoCreador pero tiene usuarioCreadorId, también lo trato como organización
-            if (!esDeOrganizacion && puntoActual.getUsuarioCreadorId() != null && usuarioId != null) {
+            if (!esDeOrganizacion && puntoActual.getUsuarioCreadorId() != null) {
                 esDeOrganizacion = true;
                 System.out.println("Es de organización (por usuarioCreadorId): " + esDeOrganizacion);
             }
             
-            // Si el usuario está intentando eliminar y es una organización, y el punto aparece en su lista,
+            // Si el usuario está intentando eliminar y el punto aparece en su lista,
             // entonces es de organización
-            if (!esDeOrganizacion && usuarioId != null) {
+            if (!esDeOrganizacion) {
                 List<PuntoDonacion> puntosOrganizacion = puntoDonacionRepository.findByUsuarioCreadorIdAndTipoCreador(usuarioId, Rol.ORGANIZACION);
                 boolean estaEnLista = puntosOrganizacion.stream().anyMatch(p -> p.getId().equals(id));
                 if (estaEnLista) {
@@ -369,15 +382,7 @@ public class PuntoDonacionController {
             
             if (esDeOrganizacion) {
                 // Para puntos de organizaciones: eliminación física
-                // Primero verifico que el usuario tenga permisos
-                if (usuarioId == null) {
-                    System.err.println("Error: usuarioId es null al intentar eliminar punto " + id);
-                    return ResponseEntity.status(400).body(null); // Falta el ID del usuario
-                }
-                
                 // Verifico los permisos para eliminar
-                // si el punto está en la lista de puntos de la organización,
-                // entonces el usuario tiene permisos para eliminarlo
                 boolean tienePermisos = false;
                 
                 // Primero verifico si el punto tiene usuarioCreadorId y coincide
@@ -417,6 +422,7 @@ public class PuntoDonacionController {
                 }
                 
                 // Elimino físicamente de la base de datos
+                favoritoRepository.deleteByPuntoDonacionId(id);
                 puntoDonacionRepository.delete(puntoActual);
                 puntoDonacionRepository.flush();
                 
@@ -428,9 +434,9 @@ public class PuntoDonacionController {
                     return ResponseEntity.ok().build(); // Eliminado 
                 }
             } else {
-                // Para puntos de administradores solo desactivo (soft delete)
-                puntoActual.setActivo(false);
-                puntoDonacionRepository.save(puntoActual);
+                // Punto que no es de org (creado por admin): también hard delete
+                favoritoRepository.deleteByPuntoDonacionId(id);
+                puntoDonacionRepository.delete(puntoActual);
                 puntoDonacionRepository.flush();
                 return ResponseEntity.ok().build();
             }

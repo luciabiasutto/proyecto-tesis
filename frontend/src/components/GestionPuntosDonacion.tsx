@@ -205,38 +205,25 @@ const GestionPuntosDonacion: React.FC = () => {
    * Para puntos de organizaciones, los elimina físicamente (hard delete)
    */
   const handleDelete = async (id: number) => {
-    const confirmar = window.confirm('¿Estás seguro de que quieres eliminar este punto de donación?\n\nEsta acción no se puede deshacer.');
-    if (confirmar) {
-      const confirmar2 = window.confirm('Última confirmación:\n\n¿Realmente quieres eliminar este punto?');
-      if (confirmar2) {
-        try {
-          await api.delete(`/puntos-donacion/${id}`);
-          // Actualizo el estado local marcando el punto como desactivado
-          setPuntos(prevPuntos => 
-            prevPuntos.map(p => 
-              p.id === id ? { ...p, activo: false } : p
-            )
-          );
-          // Recargo los puntos después de un pequeño delay para asegurar que se actualizó en el servidor
-          setTimeout(async () => {
-            await fetchPuntos();
-          }, 300);
-          setError(null);
-          alert('Punto eliminado correctamente.');
-          
-          // Disparar evento personalizado para notificar al mapa que se eliminó un punto
-          window.dispatchEvent(new CustomEvent('puntoEliminado', { detail: { puntoId: id } }));
-        } catch (err: any) {
-          console.error('Error al eliminar:', err);
-          if (err.response?.data) {
-            setError(`Error: ${err.response.data}`);
-            alert(`Error: ${err.response.data}`);
-          } else {
-            setError('Error al eliminar el punto de donación');
-            alert('Error al eliminar el punto de donación');
-          }
-        }
-      }
+    console.log('Click Eliminar - punto id:', id);
+    if (!window.confirm('¿Estás seguro de que quieres eliminar este punto de donación?')) {
+      return;
+    }
+
+    try {
+      console.log('Enviando DELETE /puntos-donacion/' + id);
+      await api.delete(`/puntos-donacion/${id}`);
+      setPuntos(prevPuntos => prevPuntos.filter(p => p.id !== id));
+      setError(null);
+      alert('Punto eliminado correctamente.');
+      window.dispatchEvent(new CustomEvent('puntoEliminado', { detail: { puntoId: id } }));
+    } catch (err: any) {
+      console.error('Error al eliminar:', err);
+      const mensaje = err.response?.data
+        ? (typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data))
+        : (err.message || 'Error al eliminar el punto de donación');
+      setError(`Error: ${mensaje}`);
+      alert(`Error al eliminar: ${mensaje}`);
     }
   };
 
@@ -283,10 +270,22 @@ const GestionPuntosDonacion: React.FC = () => {
   };
 
   if (loading) return <div className="loading">Cargando puntos de donación...</div>;
-  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="gestion-puntos-donacion">
+      {error && (
+        <div className="error" style={{ margin: '1rem', padding: '0.75rem' }}>
+          {error}
+          <button
+            type="button"
+            style={{ marginLeft: '1rem' }}
+            onClick={() => setError(null)}
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
+
       {!showForm && (
         <div className="header">
           <h2>📍 Gestión de Puntos de Donación</h2>
@@ -564,12 +563,8 @@ const GestionPuntosDonacion: React.FC = () => {
                   <button 
                     type="button"
                     className="btn btn-sm btn-danger"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      e.stopImmediatePropagation();
-                      handleDelete(punto.id);
-                    }}
+                    style={{ cursor: 'pointer', position: 'relative', zIndex: 10 }}
+                    onClick={() => handleDelete(punto.id)}
                   >
                     Eliminar
                   </button>
